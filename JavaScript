@@ -1,0 +1,77 @@
+document.addEventListener('DOMContentLoaded', () => {
+    const display = document.getElementById('result');
+    const buttons = document.querySelectorAll('button');
+
+    let currentInput = '';
+    let operator = null;
+    let previousInput = '';
+    let isNewOperation = true;
+
+    buttons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const buttonText = e.target.textContent;
+
+            if (e.target.classList.contains('number') || e.target.classList.contains('decimal')) {
+                if (isNewOperation) {
+                    currentInput = buttonText;
+                    isNewOperation = false;
+                } else {
+                    currentInput += buttonText;
+                }
+                display.value = currentInput;
+            } else if (e.target.classList.contains('operator')) {
+                if (currentInput === '') return;
+                if (previousInput !== '') {
+                    calculate();
+                }
+                operator = buttonText;
+                previousInput = currentInput;
+                currentInput = '';
+                isNewOperation = true;
+            } else if (e.target.classList.contains('equals')) {
+                calculate();
+                operator = null;
+                previousInput = '';
+                isNewOperation = true;
+            } else if (e.target.classList.contains('clear')) {
+                currentInput = '';
+                operator = null;
+                previousInput = '';
+                display.value = '';
+                isNewOperation = true;
+            }
+        });
+    });
+
+    function calculate() {
+        let result;
+        const prev = parseFloat(previousInput);
+        const curr = parseFloat(currentInput);
+
+        if (isNaN(prev) || isNaN(curr)) return;
+
+        switch (operator) {
+            case '+':
+                result = prev + curr;
+                break;
+            case '-':
+                result = prev - curr;
+                break;
+            case '*':
+                result = prev * curr;
+                break;
+            case '/':
+                if (curr === 0) {
+                    result = 'Erro';
+                } else {
+                    result = prev / curr;
+                }
+                break;
+            default:
+                return;
+        }
+
+        display.value = result;
+        currentInput = result.toString();
+    }
+});
